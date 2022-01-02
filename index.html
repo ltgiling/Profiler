@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport" />
+    <title>
+        Tizen Profiling app
+    </title>
+    <link href="lib/tau/wearable/theme/default/tau.css" rel="stylesheet" />
+    <link href="lib/tau/wearable/theme/default/tau.circle.css" rel="stylesheet" />
+    <link href="css/PPstyle.css" rel="stylesheet" />
+    <link href="css/style.circle.css" rel="stylesheet" />
+    <script src="lib/tau/wearable/js/tau.js"></script>
+    <script src="js/jquery3.6.js"></script>
+    <script src="js/PP_main.js"></script>
+    <script src="js/PP_dataparsing.js"></script>
+    <script src="js/ESM_questions.js"></script>
+    <script src="js/circle-helper.js"></script>
+
+</head>
+
+<body>
+    <!-- Landing page element -->
+    <!-- change class to ui-popup on integration -->
+    <div class="ui-page" id="pp_main_app">
+        <header class="ui-popup-header">
+            <h1 class="ui-title">
+
+				Profiler
+
+			</h1>
+        </header>
+        <div class="ui-content">
+            <div class="PP_content_text">
+                This is an application to record persuasion
+                <br>profiles and experience sampling data.
+                <br>
+                <br>Thank you for participating!
+            </div>
+            <footer class="ui-footer ui-bottom-button ui-fixed">
+                <button class="ui-btn">
+                    <a data-rel="popup" href="#pp_main_menu">
+
+						Continue
+
+					</a>
+                </button>
+            </footer>
+        </div>
+
+        <!-- Main menu -->
+        <div class="ui-popup" id="pp_main_menu">
+            <div class="ui-popup-header">
+                Menu
+            </div>
+            <div class="ui-popup-content">
+                <div class="centerelement">
+                    <ul class="ui-listview">
+                        <li>
+                            <a data-rel="popup" href="#esm_lander">
+
+						ESM quiz
+
+					</a>
+                        </li>
+                        <li>
+                            <a data-rel="popup" href="#pp_lander">
+
+						Profile quiz
+
+					</a>
+                        </li>
+                        <li>
+                            <a data-rel="popup" href="#pp_check" onclick="getgbPPData();">
+
+						Profile params
+
+					</a>
+                        </li>
+		  
+                    </ul>
+                </div>
+            </div>
+            <div class="ui-popup-footer">
+            </div>
+        </div>
+
+        <!-- Persuasion Profile quiz lander page -->
+        <div class="ui-popup" id="pp_lander" data-go-to-top-button="true">
+            <header class="ui-popup-header">
+                Profiling Quiz
+            </header>
+            <div class="ui-popup-content">
+                <div class="PP_content_text">
+                    This quiz will help determine your user profile. You may answer the questions with 1-7 where 1 equals "Completely Disagree" and 7 equals "Completely Agree". The return button returns you to the previous question.
+                </div>
+                <footer class="ui-footer ui-bottom-button ui-fixed">
+                    <button class="ui-btn" onclick="pp_startQst();">
+                        <a data-rel="popup" href="#pp_quiz">
+
+							Continue
+
+							</a>
+                    </button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Persuasion Profile quiz page with Likert scale buttons -->
+        <div class="ui-popup" data-enable-page-scroll="false" id="pp_quiz">
+            <div class="ui-popup-content">
+                <a id="pp_final_a" data-rel="popup" href="">
+                 	<div class="PP_answer_one" onClick="pp_answerQst(1)">
+                        1
+                    </div>
+                    <div class="PP_answer_two" onClick="pp_answerQst(2)">
+                        2
+                    </div>
+                    <div class="PP_answer_three" onClick="pp_answerQst(3)">
+                        3
+                    </div>
+                    <div class="PP_answer_four" onClick="pp_answerQst(4)">
+                        4
+                    </div>
+                    <div class="PP_answer_five" onClick="pp_answerQst(5)">
+                        5
+                    </div>
+                    <div class="PP_answer_six" onClick="pp_answerQst(6)">
+                        6
+                    </div>
+                    <div class="PP_answer_seven" onClick="pp_answerQst(7)">
+                        7
+                    </div>   
+                 	<div class="PP_answer_back" onClick="pp_backQst()">
+                        <
+                    </div>
+               <!--  <div class="ui-selector" id="pp_selector" data-item-degree=43 data-item-radius=136>
+                        <div class="ui-item PP_one-icon" onClick="pp_answerQst(1)">
+                        </div>
+                        <div class="ui-item PP_two-icon" onClick="pp_answerQst(2)">
+                        </div>
+                        <div class="ui-item PP_three-icon" onClick="pp_answerQst(3)">
+                        </div>
+                        <div class="ui-item PP_four-icon" onClick="pp_answerQst(4)">
+                        </div>
+                        <div class="ui-item PP_five-icon" onClick="pp_answerQst(5)">
+                        </div>
+                        <div class="ui-item PP_six-icon" onClick="pp_answerQst(6)">
+                        </div>
+                        <div class="ui-item PP_seven-icon" onClick="pp_answerQst(7)">
+                        </div>
+                        <div class="ui-item show-icon" onClick="pp_backQst()">
+                        </div>
+                    </div> -->
+                </a>
+                <div class="PP_question_container">
+                    <div class="PP_question_input">
+                        <p id="pp_current_q"></p>
+                    </div>
+                </div>
+                <script>
+                    (function () {
+                            var page = document.getElementById("pp_quiz"),
+                            pp_selector = document.getElementById("pp_selector"),
+                               
+                               clickBound;
+                                                
+                        	function onClick(event) {
+                          var activeItem = selector.querySelector(".ui-item-active");
+                          console.log(activeItem.getAttribute("data-title"));
+                            }   
+                                             
+                    		page.addEventListener("popupbeforeshow", function () {
+                          clickBound = onClick.bind(null);
+                          tau.widget.Selector(pp_selector);
+                          pp_selector.addEventListener("click", clickBound, false);
+                    		});
+                                                
+                    		page.addEventListener("popupbeforehide", function () {
+                    			pp_selector.removeEventListener("click", clickBound, false);
+                    		}); 
+                    	}());
+                </script>
+            </div>
+        </div>
+
+        <!-- Persuasion Profile quiz final page -->
+        <div class="ui-popup" id="pp_final" data-go-to-top-button="true">
+            <header class="ui-popup-header">
+                Thank you!
+            </header>
+            <div class="ui-popup-content">
+                <div class="PP_content_text">
+                    Your answers have been collected succesfully.
+                </div>
+                <footer class="ui-footer ui-bottom-button ui-fixed">
+                    <button class="ui-btn">
+                        <a data-rel="popup" href="#pp_main_menu" onclick="sendPPData();">
+
+						Submit
+
+					</a>
+                    </button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Persuasion Profile debug value checker -->
+        <div class="ui-popup" id="pp_check">
+            <header class="ui-popup-header">
+                Profiling
+                <br>Parameters
+            </header>
+            <div class="ui-popup-content">
+                <div class="PP_center">
+                    <button class="PP_button" , onclick="pp_values_debug(0)">Recip</button>
+                    <button class="PP_button" , onclick="pp_values_debug(1)">Scarc</button>
+                    <button class="PP_button" , onclick="pp_values_debug(2)">Autho</button>
+                    <button class="PP_button" , onclick="pp_values_debug(3)">Commi</button>
+                    <button class="PP_button" , onclick="pp_values_debug(4)">Conse</button>
+                    <button class="PP_button" , onclick="pp_values_debug(5)">Likin</button>
+                </div>
+                <footer class="ui-footer ui-bottom-button ui-fixed">
+                    <button class="ui-btn">
+                        <a data-rel="popup" href="#pp_main_menu" onclick="PPNotifChoice();">
+
+					 	Value: <b id="debug_value"></b>
+
+						</a>
+                    </button>
+                </footer>
+            </div>
+        </div>
+
+
+        <!-- ESM quiz lander page -->
+        <div class="ui-popup" id="esm_lander" data-go-to-top-button="true">
+            <header class="ui-popup-header">
+                <h1 style="font-size:20px">
+
+                Experience Sampling
+
+                </h1>
+            </header>
+            <div class="ui-popup-content">
+                <div class="PP_content_text">
+                    This quiz will help you understand your daily study motivation and engagement. You may answer the questions with 1-7 where 1 equals "Very low" and 7 equals "Very high". The return button returns you to the previous question.
+                </div>
+                <footer class="ui-footer ui-bottom-button ui-fixed">
+                    <button class="ui-btn" onclick="esm_startQst();">
+                        <a data-rel="popup" href="#esm_quiz">
+
+							Continue
+
+							</a>
+                    </button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- ESM quiz page with Likert scale buttons -->
+        <div class="ui-popup" data-enable-page-scroll="false" id="esm_quiz">
+            <div class="ui-popup-content">
+                <a id="esm_final_a" data-rel="popup" href="" data-transition="slideup">
+                    <div class="PP_answer_one" onClick="esm_answerQst(1)">
+                        1
+                    </div>
+                    <div class="PP_answer_two" onClick="esm_answerQst(2)">
+                        2
+                    </div>
+                    <div class="PP_answer_three" onClick="esm_answerQst(3)">
+                        3
+                    </div>
+                    <div class="PP_answer_four" onClick="esm_answerQst(4)">
+                        4
+                    </div>
+                    <div class="PP_answer_five" onClick="esm_answerQst(5)">
+                        5
+                    </div>
+                    <div class="PP_answer_six" onClick="esm_answerQst(6)">
+                        6
+                    </div>
+                    <div class="PP_answer_seven" onClick="esm_answerQst(7)">
+                        7
+                    </div>
+                    <!--    <div class="ui-selector" id="esm_selector" data-item-degree=49 data-item-radius=136>
+                        <div class="ui-item PP_one-icon" onClick="esm_answerQst(1)">
+                        One
+                        </div>
+                        <div class="ui-item PP_two-icon" onClick="esm_answerQst(2)">
+                        </div>
+                        <div class="ui-item PP_three-icon" onClick="esm_answerQst(3)">
+                        </div>
+                        <div class="ui-item PP_four-icon" onClick="esm_answerQst(4)">
+                        </div>
+                        <div class="ui-item PP_five-icon" onClick="esm_answerQst(5)">
+                        </div>
+                        <div class="ui-item PP_six-icon" onClick="esm_answerQst(6)">
+                        </div>
+                        <div class="ui-item PP_seven-icon" onClick="esm_answerQst(7)">
+                        </div>
+                    </div>   -->
+                </a>
+                <div class="PP_question_container">
+                    <div class="PP_question_input">
+                        <p id="esm_current_q"></p>
+                    </div>
+                </div>
+                <script>
+                   (function () {
+                        	var esm_page = document.getElementById("esm_quiz"),
+                        	esm_selector = document.getElementById("esm_selector"),
+                        		clickBound;
+                        
+                        	function onClick(event) {
+                        		 var activeItem = selector.querySelector(".ui-item-active");
+                          	     console.log(activeItem.getAttribute("data-title"));
+                        	}
+                        
+                        	esm_page.addEventListener("popupbeforeshow", function () {
+                        		clickBound = onClick.bind(null);
+                        		tau.widget.Selector(esm_selector);
+                        		esm_selector.addEventListener("click", clickBound, false);
+                        	});
+                        
+                        	esm_page.addEventListener("popupbeforehide", function () {
+                        		esm_selector.removeEventListener("click", clickBound, false);
+                        	}); 
+                        }()); 
+                </script>
+            </div>
+        </div>
+
+        <!--  ESM activity question page -->
+        <div class="ui-popup" id="esm_activity" data-go-to-top-button="true">
+            <div class="ui-popup-header">
+                <h1 style="font-size:32px">
+
+                What is your current activity?
+
+                </h1>
+            </div>
+            <div class="ui-popup-content">
+                <ul class="ui-listview">
+                    <li>
+                        <a data-rel="popup" href="#esm_final" onclick="ESM_Activity('Project work');">
+
+						Project work
+
+                        </a>
+                    </li>
+                    <li>
+                        <a data-rel="popup" href="#esm_final" onclick="ESM_Activity('Course work');">
+
+						Course work
+
+					</a>
+                    </li>
+                    <li>
+                        <a data-rel="popup" href="#esm_final" onclick="ESM_Activity('Exam preparation');">
+
+						Exam preparation
+
+					</a>
+                    </li>
+                    <li>
+                        <a data-rel="popup" href="#esm_final" onclick="ESM_Activity('Sports');">
+
+						Sports
+
+					</a>
+                    </li>
+                    <li>
+                        <a data-rel="popup" href="#esm_final" onclick="ESM_Activity('Leisure');">
+
+						Leisure
+
+					</a>
+                    </li>
+                    <li>
+                        <a data-rel="popup" href="#esm_final" onclick="ESM_Activity('(Side)job');">
+
+						(Side)job
+
+					</a>
+                    </li>
+                    <li>
+                        <a data-rel="popup" href="#esm_final" onclick="ESM_Activity('Other');">
+
+						Other
+
+					</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="ui-popup-footer">
+            </div>
+        </div>
+
+
+
+        <!-- ESM quiz final page -->
+        <div class="ui-popup" id="esm_final" data-go-to-top-button="true">
+            <header class="ui-popup-header">
+                Thank you!
+            </header>
+            <div class="ui-popup-content">
+                <div class="PP_content_text">
+                    Your answers have been collected succesfully.
+                </div>
+                <footer class="ui-footer ui-bottom-button ui-fixed">
+                    <button class="ui-btn">
+                        <a data-rel="popup" href="#pp_main_menu">
+
+						Continue
+
+					</a>
+                    </button>
+                </footer>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
